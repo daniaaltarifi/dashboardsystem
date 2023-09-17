@@ -64,13 +64,13 @@ var routes = [
     component: <UsersCRUD />,
     layout: "/admin",
   },
-  {
-    path: "/user-page",
-    name: "User Profile",
-    icon: "nc-icon nc-single-02",
-    component: <UserPage />,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/user-page",
+  //   name: "User Profile",
+  //   icon: "nc-icon nc-single-02",
+  //   component: <UserPage />,
+  //   layout: "/admin",
+  // },
   {
     path: "/addproduct",
     name: "Product",

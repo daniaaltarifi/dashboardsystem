@@ -164,7 +164,7 @@ function AddProduct() {
       setUpdateProductId(p_id);
   
       const response = await axios.put(
-        `https://clownfish-app-3ufki.ondigitalocean.app/productdetails/edit/${p_id}`,
+        `https://jellyfish-app-6rwoy.ondigitalocean.app/productdetails/edit/${p_id}`,
         {
           product_name,
           price,
@@ -178,7 +178,7 @@ function AddProduct() {
       );
       console.log("hello");
       console.log(response.data);
-      setAdd(response.data);
+      setAdd("res",response.data);
       setIsUpdateFormVisible(false);
     } catch (error) {
       console.log(`Error in fetch edit data: ${error}`);
@@ -508,19 +508,19 @@ function AddProduct() {
                           <FormGroup>
                             <label>Category</label>
                             <select
-                              value={category_id}
-                              onChange={(e) => setCategoryId(e.target.value)}
+                          value={category_id}
+                          onChange={(e) => setCategoryId(e.target.value)}
+                        >
+                          <option value="">Select a category</option>
+                          {categories.map((category) => (
+                            <option
+                              key={category.category_id}
+                              value={category.category_id}
                             >
-                              <option value="">Select a category</option>
-                              {categories.map((category) => (
-                                <option
-                                  key={category.c_id}
-                                  value={category.c_id}
-                                >
-                                  {category.c_category_name}
-                                </option>
-                              ))}
-                            </select>
+                              {category.category_name}
+                            </option>
+                          ))}
+                        </select>
                           </FormGroup>
                         </Col>
                       </Row>
