@@ -78,7 +78,7 @@ function AddProduct() {
         const response = await axios.get("https://jellyfish-app-6rwoy.ondigitalocean.app/productdetails/getproductdetails");
         setAdd(response.data);
       } catch (error) {
-        console.log(`Error getting news from frontend: ${error}`);
+        console.log(`Error getting product from frontend: ${error}`);
       }
     };
 
