@@ -48,7 +48,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://jellyfish-app-6rwoy.ondigitalocean.app/productdetails/getproductdetails");
+        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/productdetails/getproductdetails");
         setProduct(response.data);
         console.log(product);
       } catch (error) {
@@ -61,7 +61,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://jellyfish-app-6rwoy.ondigitalocean.app/blog/data");
+        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/blog/data");
         setBlog(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -73,7 +73,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://jellyfish-app-6rwoy.ondigitalocean.app/login/getusers");
+        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/login/getusers");
         setUsers(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -85,7 +85,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://jellyfish-app-6rwoy.ondigitalocean.app/orders/getorder");
+        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/orders/getorder");
         setOrders(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);

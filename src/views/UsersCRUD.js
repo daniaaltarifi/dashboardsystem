@@ -49,7 +49,7 @@ function UsersCRUD() {
     const fetchData = async () => {
       try {
         //modify route
-        const response = await axios.get("https://jellyfish-app-6rwoy.ondigitalocean.app/product/get");
+        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/product/get");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting news from frontend: ${error}`);
@@ -62,7 +62,7 @@ function UsersCRUD() {
     try {
       const response = await axios.post(
          //modify route
-        "http://localhost:1010/product/add",
+        "https://plankton-app-dde9x.ondigitalocean.app/product/add",
         {
             username,
             email,
@@ -92,7 +92,7 @@ function UsersCRUD() {
         setUpdateUserId(id);
          //modify route
       const response = await axios.patch(
-        `http://localhost:1010/product/edit/${id}`,
+        `https://plankton-app-dde9x.ondigitalocean.app/product/edit/${id}`,
         {
             username:username,
             email:email,
@@ -114,7 +114,7 @@ function UsersCRUD() {
     try {
                  //modify route
       const response = await axios.delete(
-        `http://localhost:1010/product/delete/${id}`
+        `https://plankton-app-dde9x.ondigitalocean.app/product/delete/${id}`
       );
       console.log(id);
       console.log(response);
