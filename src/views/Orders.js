@@ -49,7 +49,7 @@ function Orders() {
     const fetchData = async () => {
       try {
         //modify route
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/product/get");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/product/get");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting news from frontend: ${error}`);
@@ -64,7 +64,7 @@ function Orders() {
     try {
                  //modify route
       const response = await axios.delete(
-        `https://plankton-app-dde9x.ondigitalocean.app/product/delete/${id}`
+        `https://monkfish-app-wyvrc.ondigitalocean.app/product/delete/${id}`
       );
       console.log(id);
       console.log(response);

@@ -43,7 +43,7 @@ function Blog() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/blog/data");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/blog/data");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -55,7 +55,7 @@ function Blog() {
   const handlePost = async () => {
     try {
       const response = await axios.post(
-        "https://plankton-app-dde9x.ondigitalocean.app/blog/add",
+        "https://monkfish-app-wyvrc.ondigitalocean.app/blog/add",
         {
           title: updateTitle, // Use the provided title
           date: updateDate, // Use the provided date
@@ -79,7 +79,7 @@ function Blog() {
   const handleUpdate = async (blog_id) => {
     try {
       const response = await axios.put(
-        `https://plankton-app-dde9x.ondigitalocean.app/blog/edit/${blog_id}`,
+        `https://monkfish-app-wyvrc.ondigitalocean.app/blog/edit/${blog_id}`,
         {
           title: updateTitle, // Use the provided title
           date: updateDate, // Use the provided date
@@ -102,7 +102,7 @@ function Blog() {
   const handleDelete = async (blog_id, index) => {
     try {
       const response = await axios.delete(
-        `https://plankton-app-dde9x.ondigitalocean.app/blog/delete/${blog_id}`
+        `https://monkfish-app-wyvrc.ondigitalocean.app/blog/delete/${blog_id}`
       );
       console.log(blog_id);
       console.log(response);
@@ -190,7 +190,7 @@ function Blog() {
             <Col md="12">
               <Card>
                 <CardHeader>
-                  <CardTitle tag="h4">Simple Table</CardTitle>
+                  <CardTitle tag="h4">Blog Table</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Table responsive>

@@ -75,7 +75,7 @@ function AddProduct() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/productdetails/getproductdetails");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/getproductdetails");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting product from frontend: ${error}`);
@@ -88,7 +88,7 @@ function AddProduct() {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/category/getproducts");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/category/getproducts");
         setCategories(response.data); // Assuming the response contains the list of categories
       } catch (error) {
         console.log(`Error fetching categories: ${error}`);
@@ -97,7 +97,7 @@ function AddProduct() {
   
     const fetchColors = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/color/getproductdetails");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/color/getproductdetails");
         setColors(response.data); // Assuming the response contains the list of colors
       } catch (error) {
         console.log(`Error fetching colors: ${error}`);
@@ -122,7 +122,7 @@ function AddProduct() {
       const imageUrls = image_slider.join(',');
       // ... other data
       const response = await axios.post(
-        "https://plankton-app-dde9x.ondigitalocean.app/productdetails/add",
+        "https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/add",
         {
           product_name,
           price,
@@ -164,7 +164,7 @@ function AddProduct() {
       setUpdateProductId(p_id);
   
       const response = await axios.put(
-        `https://plankton-app-dde9x.ondigitalocean.app/productdetails/edit/${p_id}`,
+        `https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/edit/${p_id}`,
         {
           product_name,
           price,
@@ -189,7 +189,7 @@ function AddProduct() {
   const handleDelete = async (p_id) => {
     try {
       const response = await axios.delete(
-        `https://plankton-app-dde9x.ondigitalocean.app/productdetails/delete/${p_id}`
+        `https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/delete/${p_id}`
       );
       console.log(p_id);
       console.log(response);
@@ -255,7 +255,7 @@ function AddProduct() {
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="6">
+                    <Col className="pl-1 mt-4" md="6">
                       <FormGroup>
                         <label>Category</label>
                         <select
@@ -401,7 +401,7 @@ function AddProduct() {
             <Col md="12">
               <Card>
                 <CardHeader>
-                  <CardTitle tag="h4">Simple Table</CardTitle>
+                  <CardTitle tag="h4">Products Table</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Table responsive>

@@ -48,7 +48,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/productdetails/getproductdetails");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/getproductdetails");
         setProduct(response.data);
         console.log(product);
       } catch (error) {
@@ -61,7 +61,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/blog/data");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/blog/data");
         setBlog(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -73,7 +73,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/login/getusers");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/login/getusers");
         setUsers(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -85,7 +85,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/orders/getorder");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/orders/getorder");
         setOrders(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -125,7 +125,7 @@ function Dashboard() {
               </CardBody>
               <CardFooter>
                 <hr />
-                <div className="stats">
+                {/* <div className="stats">
                   {isUpdateClicked ? (
                     <p className="card-category">Products</p>
                   ) : (
@@ -135,7 +135,7 @@ function Dashboard() {
                     {isUpdateClicked ? product.length : ""}
                   </CardTitle>
                   <p />
-                </div>
+                </div> */}
               </CardFooter>
             </Card>
           </Col>
@@ -159,9 +159,9 @@ function Dashboard() {
               </CardBody>
               <CardFooter>
                 <hr />
-                <div className="stats">
+                {/* <div className="stats">
                   <i className="far fa-calendar" /> Last day
-                </div>
+                </div> */}
               </CardFooter>
             </Card>
           </Col>
@@ -185,9 +185,9 @@ function Dashboard() {
               </CardBody>
               <CardFooter>
                 <hr />
-                <div className="stats">
+                {/* <div className="stats">
                   <i className="far fa-clock" /> In the last hour
-                </div>
+                </div> */}
               </CardFooter>
             </Card>
           </Col>
@@ -211,9 +211,9 @@ function Dashboard() {
               </CardBody>
               <CardFooter>
                 <hr />
-                <div className="stats">
+                {/* <div className="stats">
                   <i className="fas fa-sync-alt" /> Update now
-                </div>
+                </div> */}
               </CardFooter>
             </Card>
           </Col>

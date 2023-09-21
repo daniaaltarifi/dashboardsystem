@@ -28,12 +28,45 @@ import AddProduct from 'views/AddProduct.js'
 import Blog from "views/Blog";
 import UsersCRUD from "views/UsersCRUD";
 import Orders from "views/Orders";
+import Login from 'views/Login'
+import HomeSlider from "views/HomeSlider";
+import SpecialOffers from "views/SpecialOffers";
+import Banners from "views/Banners";
+import TopSelling from "views/TopSelling";
 var routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
     icon: "nc-icon nc-bank",
     component: <Dashboard />,
+    layout: "/admin",
+  },
+   {
+    path: "/homeslider",
+    name: "Home Slider",
+    icon: "nc-icon nc-diamond",
+    component: <HomeSlider />,
+    layout: "/admin",
+  },
+   {
+    path: "/specialoffer",
+    name: "Special Offers",
+    icon: "nc-icon nc-diamond",
+    component: <SpecialOffers />,
+    layout: "/admin",
+  },
+   {
+    path: "/banners",
+    name: "Banners",
+    icon: "nc-icon nc-diamond",
+    component: <Banners />,
+    layout: "/admin",
+  },
+   {
+    path: "/topselling",
+    name: "Top Selling ",
+    icon: "nc-icon nc-diamond",
+    component: <TopSelling />,
     layout: "/admin",
   },
   // {
@@ -65,10 +98,10 @@ var routes = [
     layout: "/admin",
   },
   // {
-  //   path: "/user-page",
-  //   name: "User Profile",
+  //   path: "/login",
+  //   name: "Login",
   //   icon: "nc-icon nc-single-02",
-  //   component: <UserPage />,
+  //   component: <Login/>,
   //   layout: "/admin",
   // },
   {

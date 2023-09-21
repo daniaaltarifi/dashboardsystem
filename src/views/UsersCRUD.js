@@ -49,7 +49,7 @@ function UsersCRUD() {
     const fetchData = async () => {
       try {
         //modify route
-        const response = await axios.get("https://plankton-app-dde9x.ondigitalocean.app/product/get");
+        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/product/get");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting news from frontend: ${error}`);
@@ -62,7 +62,7 @@ function UsersCRUD() {
     try {
       const response = await axios.post(
          //modify route
-        "https://plankton-app-dde9x.ondigitalocean.app/product/add",
+        "https://monkfish-app-wyvrc.ondigitalocean.app/product/add",
         {
             username,
             email,
@@ -92,7 +92,7 @@ function UsersCRUD() {
         setUpdateUserId(id);
          //modify route
       const response = await axios.patch(
-        `https://plankton-app-dde9x.ondigitalocean.app/product/edit/${id}`,
+        `https://monkfish-app-wyvrc.ondigitalocean.app/product/edit/${id}`,
         {
             username:username,
             email:email,
@@ -114,7 +114,7 @@ function UsersCRUD() {
     try {
                  //modify route
       const response = await axios.delete(
-        `https://plankton-app-dde9x.ondigitalocean.app/product/delete/${id}`
+        `https://monkfish-app-wyvrc.ondigitalocean.app/product/delete/${id}`
       );
       console.log(id);
       console.log(response);
@@ -247,7 +247,7 @@ function UsersCRUD() {
             <Col md="12">
               <Card>
                 <CardHeader>
-                  <CardTitle tag="h4">Simple Table</CardTitle>
+                  <CardTitle tag="h4">Users Table</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Table responsive>
