@@ -1,6 +1,5 @@
-
 import axios from "axios";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 // reactstrap components
 import {
@@ -35,11 +34,23 @@ function AddProduct() {
   const [colors, setColors] = useState([]);
 
   const [categories, setCategories] = useState([]);
-
+  const [openImage, setOpenImage] = useState(false);
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileLimit, setFileLimit] = useState(false);
   const MAX_COUNT = 5;
+  const [images, setImages] = useState([]);
+  const [product_id, setProductId] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleImageChange = (e) => {
+    const selectedImages = Array.from(e.target.files);
+    setImages(selectedImages);
+  };
+
+  const handleProductIdChange = (e) => {
+    setProductId(e.target.value);
+  };
 
   const handleUploadFiles = (files) => {
     const uploaded = [...uploadedFiles];
@@ -61,65 +72,66 @@ function AddProduct() {
   const handleFileEvent = (e) => {
     const chosenFiles = Array.prototype.slice.call(e.target.files);
     const fileURLs = [];
-  
+
     chosenFiles.forEach((file) => {
       const objectURL = URL.createObjectURL(file);
       fileURLs.push(objectURL);
     });
-  
+
     setImageSlider(fileURLs);
     handleUploadFiles(chosenFiles);
+    const selectedImages = Array.from(e.target.files);
+    setImages(selectedImages);
   };
-  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/getproductdetails");
+        const response = await axios.get(
+          "https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/getproductdetails"
+        );
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting product from frontend: ${error}`);
       }
     };
 
-
-
-
-
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/category/getproducts");
+        const response = await axios.get(
+          "https://monkfish-app-wyvrc.ondigitalocean.app/category/getproducts"
+        );
         setCategories(response.data); // Assuming the response contains the list of categories
       } catch (error) {
         console.log(`Error fetching categories: ${error}`);
       }
     };
-  
+
     const fetchColors = async () => {
       try {
-        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/color/getproductdetails");
+        const response = await axios.get(
+          "https://monkfish-app-wyvrc.ondigitalocean.app/color/getproductdetails"
+        );
         setColors(response.data); // Assuming the response contains the list of colors
       } catch (error) {
         console.log(`Error fetching colors: ${error}`);
       }
     };
-  
+
     fetchCategories();
     fetchColors();
-    
+
     fetchData();
   }, []);
 
-
-    
   const handlePost = async () => {
     if (!category_id) {
       alert("Please select a category.");
       return;
     }
-  
+
     try {
-      const imageUrls = image_slider.join(',');
+      const imageUrls = image_slider.join(",");
       // ... other data
       const response = await axios.post(
         "https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/add",
@@ -134,21 +146,46 @@ function AddProduct() {
           image_slider: imageUrls, // Pass the string of image URLs
         }
       );
-      
+
       console.log(response.data);
       setAdd(response.data);
+      setOpenImage(true);
     } catch (error) {
       console.log(`Error fetching post data  ${error}`);
     }
   };
-  
+
   const openUpdateForm = (p_id) => {
     setIsUpdateFormVisible(true);
     setUpdateProductId(p_id);
   };
 
+  const handleUpload = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("product_id", product_id);
+      images.forEach((image) => {
+        formData.append("image", image);
+      });
 
-  
+      const response = await axios.post(
+        "https://monkfish-app-wyvrc.ondigitalocean.app/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setMessage(response.data.message);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      setMessage("Image upload failed");
+    }
+  };
+
+
   const handleUpdate = async (
     p_id,
     product_name,
@@ -162,7 +199,7 @@ function AddProduct() {
   ) => {
     try {
       setUpdateProductId(p_id);
-  
+
       const response = await axios.put(
         `https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/edit/${p_id}`,
         {
@@ -178,13 +215,12 @@ function AddProduct() {
       );
       console.log("hello");
       console.log(response.data);
-      setAdd("res",response.data);
+      setAdd("res", response.data);
       setIsUpdateFormVisible(false);
     } catch (error) {
       console.log(`Error in fetch edit data: ${error}`);
     }
   };
-  
 
   const handleDelete = async (p_id) => {
     try {
@@ -204,7 +240,7 @@ function AddProduct() {
     }
   };
 
-  console.log("add",add);
+  console.log("add", add);
   return (
     <>
       <div className="content">
@@ -292,93 +328,8 @@ function AddProduct() {
                         </select>
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="6">
-                      <FormGroup
-                        action="/addproduct"
-                        method="POST"
-                        enctype="multipart/form-data"
-                      >
-                        <label>image_main</label>
-                        <Input
-                          type="file"
-                          name="image"
-                          onChange={(e) => setImgMain(e.target.value)}
-                        />
-                      </FormGroup>
-                    </Col>
                   </Row>
-                  <Row>
-                    <Col className="pl-1" md="6">
-                      <FormGroup>
-                        <label>image slider</label>
-                        <Input
-                          type="file"
-                          multiple
-                          accept="application/pdf, image/png"
-                          onChange={handleFileEvent}
-                          disabled={fileLimit}
-                        />
-                        <label htmlFor="fileUpload"></label>
 
-                        {image_slider.map((imageUrl, index) => (
-                          <div key={index}>
-                            <img src={imageUrl} alt={`Image ${index}`} />
-                          </div>
-                        ))}
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  {/* <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label>Address</label>
-                        <Input
-                          defaultValue="Melbourne, Australia"
-                          placeholder="Home Address"
-                          type="text"
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col className="pr-1" md="4">
-                      <FormGroup>
-                        <label>City</label>
-                        <Input
-                          defaultValue="Melbourne"
-                          placeholder="City"
-                          type="text"
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="px-1" md="4">
-                      <FormGroup>
-                        <label>Country</label>
-                        <Input
-                          defaultValue="Australia"
-                          placeholder="Country"
-                          type="text"
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-1" md="4">
-                      <FormGroup>
-                        <label>Postal Code</label>
-                        <Input placeholder="ZIP Code" type="number" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label>About Me</label>
-                        <Input
-                          type="textarea"
-                          defaultValue="Oh so, your weak rhyme You doubt I'll bother, reading into it"
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row> */}
                   <Row>
                     <div className="update ml-auto mr-auto">
                       <Button
@@ -392,6 +343,66 @@ function AddProduct() {
                     </div>
                   </Row>
                 </Form>
+                <Row>
+                  {openImage && (
+                    <div>
+                      <Col className="pl-1" md="6">
+                        <div>
+                          <label htmlFor="productId">Product ID:</label>
+                          <input
+                            type="text"
+                            id="productId"
+                            value={product_id}
+                            onChange={handleProductIdChange}
+                          />
+                        </div>
+                        <FormGroup
+                          action="/addproduct"
+                          method="POST"
+                          enctype="multipart/form-data"
+                        >
+                          <label>image_main</label>
+                          <Input
+                            type="file"
+                            name="image"
+                            // onChange={(e) => setImgMain(e.target.value)}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col className="pl-1" md="6">
+                        <FormGroup>
+                          <label>image slider</label>
+                          <Input
+                            type="file"
+                            multiple
+                            accept="application/pdf, image/png"
+                            onChange={handleFileEvent}
+                            disabled={fileLimit}
+                          />
+                          <label htmlFor="fileUpload"></label>
+
+                          {/* {image_slider.map((imageUrl, index) => (
+                      <div key={index}>
+                        <img src={imageUrl} alt="" />
+                      </div>
+                    ))} */}
+                        </FormGroup>
+                        {message && <p>{message}</p>}
+
+                        <div className="update ml-auto mr-auto">
+                          <Button
+                            className="btn-round"
+                            color="primary"
+                            type="button"
+                            onClick={handleUpload}
+                          >
+                            Add Image
+                          </Button>
+                        </div>
+                      </Col>
+                    </div>
+                  )}
+                </Row>
               </CardBody>
             </Card>
           </Col>
@@ -429,10 +440,16 @@ function AddProduct() {
                             <td>{product.category_id}</td>
                             <td>{product.color_id}</td>
                             <td>
-                              <img src={product.image_main} alt="" />
+                              <img src={product.imagePath} alt="" />
                             </td>
                             <td>
-                              <img src={product.image_slider} alt="" />
+                              <img
+                                src={product.imagePath}
+                                alt=""
+                                onError={(e) =>
+                                  console.log("Image load error", e)
+                                }
+                              />
                             </td>
                             <td>
                               <button
@@ -508,19 +525,19 @@ function AddProduct() {
                           <FormGroup>
                             <label>Category</label>
                             <select
-                          value={category_id}
-                          onChange={(e) => setCategoryId(e.target.value)}
-                        >
-                          <option value="">Select a category</option>
-                          {categories.map((category) => (
-                            <option
-                              key={category.category_id}
-                              value={category.category_id}
+                              value={category_id}
+                              onChange={(e) => setCategoryId(e.target.value)}
                             >
-                              {category.category_name}
-                            </option>
-                          ))}
-                        </select>
+                              <option value="">Select a category</option>
+                              {categories.map((category) => (
+                                <option
+                                  key={category.category_id}
+                                  value={category.category_id}
+                                >
+                                  {category.category_name}
+                                </option>
+                              ))}
+                            </select>
                           </FormGroup>
                         </Col>
                       </Row>
