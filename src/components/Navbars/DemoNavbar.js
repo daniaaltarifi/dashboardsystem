@@ -1,23 +1,6 @@
-/*!
 
-=========================================================
-* Paper Dashboard React - v1.3.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-* Licensed under MIT (https://github.com/creativetimofficial/paper-dashboard-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation,useNavigate } from "react-router-dom";
 import {
   Collapse,
   Navbar,
@@ -44,6 +27,10 @@ function Header(props) {
   const [color, setColor] = React.useState("transparent");
   const sidebarToggle = React.useRef();
   const location = useLocation();
+  const navigate=useNavigate()
+  const handleLogout = () => {
+    navigate('/');
+  };
   const toggle = () => {
     if (isOpen) {
       setColor("transparent");
@@ -150,25 +137,25 @@ function Header(props) {
               toggle={(e) => dropdownToggle(e)}
             >
               <DropdownToggle caret nav>
-                <i className="nc-icon nc-bell-55" />
+                <i className="nc-icon nc-settings-gear-65" />
                 <p>
                   <span className="d-lg-none d-md-block">Some Actions</span>
                 </p>
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem tag="a">Action</DropdownItem>
-                <DropdownItem tag="a">Another Action</DropdownItem>
-                <DropdownItem tag="a">Something else here</DropdownItem>
+                <DropdownItem tag="a" onClick={handleLogout}>Logout</DropdownItem>
+                {/* <DropdownItem tag="a">Another Action</DropdownItem>
+                <DropdownItem tag="a">Something else here</DropdownItem> */}
               </DropdownMenu>
             </Dropdown>
-            <NavItem>
+            {/* <NavItem>
               <Link to="#pablo" className="nav-link btn-rotate">
                 <i className="nc-icon nc-settings-gear-65" />
                 <p>
                   <span className="d-lg-none d-md-block">Account</span>
                 </p>
               </Link>
-            </NavItem>
+            </NavItem> */}
           </Nav>
         </Collapse>
       </Container>

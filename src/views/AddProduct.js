@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 
 // reactstrap components
 import {
@@ -25,23 +26,38 @@ function AddProduct() {
   const [old_price, setOld_price] = useState("");
   const [category_id, setCategoryId] = useState("");
   const [color_id, setColorId] = useState("");
+  const [model_id, setModelId] = useState("");
   const [image_main, setImgMain] = useState("");
   const [image_slider, setImageSlider] = useState([]);
   const [add, setAdd] = useState([]);
   const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
   const [updateProductId, setUpdateProductId] = useState("");
-  const [del, setDel] = useState([]);
   const [colors, setColors] = useState([]);
-
+  const [models, setModels] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]); // Array to store selected colors
   const [categories, setCategories] = useState([]);
   const [openImage, setOpenImage] = useState(false);
-
+  const [getImg, setGetImg] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileLimit, setFileLimit] = useState(false);
   const MAX_COUNT = 5;
   const [images, setImages] = useState([]);
-  const [product_id, setProductId] = useState("");
+  const [product_id, setProduct_id] = useState(null);
   const [message, setMessage] = useState("");
+  const [details, setDetails] = useState("");
+  const [screen, setScreen] = useState("");
+  const [battery, setBattery] = useState("");
+  const [camera_front, setCameraFront] = useState("");
+  const [camera_back, setCameraBack] = useState("");
+  const [material, setMaterial] = useState("");
+  const [gpu, setGpu] = useState("");
+  const [cpu, setCpu] = useState("");
+  const [type_charger, setTypeCharger] = useState("");
+  const [typeId, setTypeId] = useState("");
+  const [openImageUpdate, setOpenImageUpdate] = useState(false);
+  const [color_name, setColor_name] = useState("");
+  const [image_color, setImage_color] = useState("");
+  const [imagesColorArr, setImagesColorArr] = useState([]);
 
   const handleImageChange = (e) => {
     const selectedImages = Array.from(e.target.files);
@@ -49,7 +65,7 @@ function AddProduct() {
   };
 
   const handleProductIdChange = (e) => {
-    setProductId(e.target.value);
+    setProduct_id(e.target.value);
   };
 
   const handleUploadFiles = (files) => {
@@ -83,12 +99,25 @@ function AddProduct() {
     const selectedImages = Array.from(e.target.files);
     setImages(selectedImages);
   };
+  const handleFileEventColor = (e) => {
+    const chosenFiles = Array.prototype.slice.call(e.target.files);
+    const fileURLs = [];
 
+    chosenFiles.forEach((file) => {
+      const objectURL = URL.createObjectURL(file);
+      fileURLs.push(objectURL);
+    });
+
+    setImageSlider(fileURLs);
+    handleUploadFiles(chosenFiles);
+    const selectedImages = Array.from(e.target.files);
+    setImages(selectedImages);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/getproductdetails"
+          "http://localhost:1010/productdetails/getproductdetails"
         );
         setAdd(response.data);
       } catch (error) {
@@ -110,19 +139,38 @@ function AddProduct() {
     const fetchColors = async () => {
       try {
         const response = await axios.get(
-          "https://monkfish-app-wyvrc.ondigitalocean.app/color/getproductdetails"
+          "http://localhost:1010/color/getproductdetails"
         );
-        setColors(response.data); // Assuming the response contains the list of colors
+        const colorOptions = response.data.map((color) => ({
+          value: color.color_id,
+          label: color.color_name,
+        }));
+        setColors(colorOptions); // Convert data to format accepted by react-select
       } catch (error) {
         console.log(`Error fetching colors: ${error}`);
       }
     };
-
+    const fetchModels = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:1010/model/getproducts"
+        );
+        setModels(response.data); // Assuming the response contains the list of colors
+      } catch (error) {
+        console.log(`Error fetching models: ${error}`);
+      }
+    };
     fetchCategories();
     fetchColors();
-
+    fetchModels();
     fetchData();
   }, []);
+  // Handle color selection
+  const handleColorChange = (selectedOptions) => {
+    const selectedColorNames = selectedOptions.map((option) => option.label);
+    setSelectedColors(selectedColorNames);
+    console.log("selectedColors", selectedColorNames);
+  };
 
   const handlePost = async () => {
     if (!category_id) {
@@ -134,19 +182,35 @@ function AddProduct() {
       const imageUrls = image_slider.join(",");
       // ... other data
       const response = await axios.post(
-        "https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/add",
+        "http://localhost:1010/productdetails/add",
         {
           product_name,
           price,
           stock,
           old_price,
           category_id,
-          color_id,
+          // colors: selectedColors, // Pass the array of selected color IDs
+          model_id,
+          details,
+          screen,
+          battery,
+          camera_front,
+          camera_back,
+          material,
+          gpu,
+          cpu,
+          type_charger,
+          typeId,
           image_main,
           image_slider: imageUrls, // Pass the string of image URLs
         }
       );
 
+      const newProductId = response.data.p_id;
+      setProduct_id(newProductId); // Set the product_id state variable
+
+      console.log("id", newProductId);
+      // console.log("id",product_id)
       console.log(response.data);
       setAdd(response.data);
       setOpenImage(true);
@@ -155,21 +219,51 @@ function AddProduct() {
     }
   };
 
+
   const openUpdateForm = (p_id) => {
     setIsUpdateFormVisible(true);
     setUpdateProductId(p_id);
   };
 
+  const fetchImages = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:1010/newimgproducts/images/${product_id}`
+      );
+      const relativePaths = response.data.images;
+      setGetImg(relativePaths); // Update getImg state with absolute image URLs
+    } catch (error) {
+      console.log(`Error fetching images: ${error}`);
+    }
+  };
   const handleUpload = async () => {
     try {
+      if (!product_id) {
+        alert("Please enter a product ID.");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("product_id", product_id);
       images.forEach((image) => {
         formData.append("image", image);
       });
-
       const response = await axios.post(
-        "https://monkfish-app-wyvrc.ondigitalocean.app/upload",
+        "http://localhost:1010/newimgproducts/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      // Post the selected color to the "color" table
+      formData.append("color_name", selectedColors);
+      imagesColorArr.forEach((image_color) => {
+        formData.append("image_color", image_color);
+      });
+      const colorResponse = await axios.post(
+        "http://localhost:1010/color/add",
         formData,
         {
           headers: {
@@ -178,13 +272,20 @@ function AddProduct() {
         }
       );
 
+      console.log("Color added:", colorResponse.data);
       setMessage(response.data.message);
+      fetchImages(); // Call fetchImages here
+      setOpenImage(false);
+      console.log("getimg", getImg);
     } catch (error) {
       console.error("Error uploading images:", error);
       setMessage("Image upload failed");
     }
   };
 
+  useEffect(() => {
+    console.log("getimg", getImg);
+  }, [getImg]);
 
   const handleUpdate = async (
     p_id,
@@ -194,6 +295,17 @@ function AddProduct() {
     old_price,
     category_id,
     color_id,
+    model_id,
+    details,
+    screen,
+    battery,
+    camera_front,
+    camera_back,
+    material,
+    gpu,
+    cpu,
+    type_charger,
+    typeId,
     image_main,
     image_slider
   ) => {
@@ -201,7 +313,7 @@ function AddProduct() {
       setUpdateProductId(p_id);
 
       const response = await axios.put(
-        `https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/edit/${p_id}`,
+        `http://localhost:1010/productdetails/edit/${p_id}`,
         {
           product_name,
           price,
@@ -209,6 +321,17 @@ function AddProduct() {
           old_price,
           category_id,
           color_id,
+          model_id,
+          details,
+          screen,
+          battery,
+          camera_front,
+          camera_back,
+          material,
+          gpu,
+          cpu,
+          type_charger,
+          typeId,
           image_main,
           image_slider, // Pass the array of image URLs
         }
@@ -217,15 +340,47 @@ function AddProduct() {
       console.log(response.data);
       setAdd("res", response.data);
       setIsUpdateFormVisible(false);
+      setOpenImageUpdate(true);
     } catch (error) {
       console.log(`Error in fetch edit data: ${error}`);
     }
   };
+  const [id, setId] = useState("");
 
+  const handleUpdateImg = async () => {
+    try {
+      if (!product_id) {
+        alert("Please enter a product ID.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("product_id", product_id);
+      images.forEach((image) => {
+        formData.append("image", image);
+      });
+      const response = await axios.put(
+        `http://localhost:1010/newimgproducts/images/${product_id}/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setMessage(response.data.message);
+      fetchImages(); // Call fetchImages here
+      setOpenImageUpdate(false);
+      console.log("getimg", getImg);
+    } catch (error) {
+      console.error("Error updateing images:", error);
+      setMessage("Image upload failed");
+    }
+  };
   const handleDelete = async (p_id) => {
     try {
       const response = await axios.delete(
-        `https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/delete/${p_id}`
+        `http://localhost:1010/productdetails/delete/${p_id}`
       );
       console.log(p_id);
       console.log(response);
@@ -233,8 +388,6 @@ function AddProduct() {
       setAdd((prevProduct) =>
         prevProduct.filter((product) => product.p_id !== p_id)
       );
-
-      // setDel((prev) => prev.filter((_, i) => i !== index));
     } catch (error) {
       console.error(error);
     }
@@ -314,22 +467,119 @@ function AddProduct() {
                   <Row>
                     <Col className="pl-1" md="6">
                       <FormGroup>
-                        <label>Color</label>
+                        <label>Model</label>
                         <select
-                          value={color_id}
-                          onChange={(e) => setColorId(e.target.value)}
+                          value={model_id}
+                          onChange={(e) => setModelId(e.target.value)}
                         >
-                          <option value="">Select a color</option>
-                          {colors.map((color) => (
-                            <option key={color.color_id} value={color.color_id}>
-                              {color.color_name}
+                          <option value="">Select a Model</option>
+                          {models.map((model) => (
+                            <option key={model.model_id} value={model.model_id}>
+                              {model.model_name}
                             </option>
                           ))}
                         </select>
                       </FormGroup>
                     </Col>
                   </Row>
-
+                  <Row>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Details</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setDetails(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Screen</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setScreen(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Battery</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setBattery(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Camera front</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setCameraFront(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Camera Back</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setCameraBack(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Material</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setMaterial(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Gpu</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setGpu(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Cpu</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setCpu(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Type Charger</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setTypeCharger(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-1" md="3">
+                      <FormGroup>
+                        <label>Type id</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setTypeId(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   <Row>
                     <div className="update ml-auto mr-auto">
                       <Button
@@ -353,40 +603,50 @@ function AddProduct() {
                             type="text"
                             id="productId"
                             value={product_id}
+                            disabled
                             onChange={handleProductIdChange}
                           />
                         </div>
+                      </Col>
+
+                      <Col className="pl-1" md="6">
                         <FormGroup
                           action="/addproduct"
                           method="POST"
                           enctype="multipart/form-data"
                         >
-                          <label>image_main</label>
-                          <Input
-                            type="file"
-                            name="image"
-                            // onChange={(e) => setImgMain(e.target.value)}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col className="pl-1" md="6">
-                        <FormGroup>
-                          <label>image slider</label>
-                          <Input
-                            type="file"
-                            multiple
-                            accept="application/pdf, image/png"
-                            onChange={handleFileEvent}
-                            disabled={fileLimit}
-                          />
-                          <label htmlFor="fileUpload"></label>
+                          <div>
+                            <label>image slider</label>
+                            <Input
+                              name="image"
+                              type="file"
+                              multiple
+                              onChange={handleFileEvent}
+                              disabled={fileLimit}
+                            />
 
-                          {/* {image_slider.map((imageUrl, index) => (
-                      <div key={index}>
-                        <img src={imageUrl} alt="" />
-                      </div>
-                    ))} */}
+                            <label htmlFor="fileUpload"></label>
+                          </div>
+                          <Select
+                            isMulti
+                            options={colors}
+                            value={colors.filter(
+                              (color) => selectedColors.includes(color.label) // Change 'value' to 'label'
+                            )}
+                            onChange={handleColorChange}
+                          />
+                           <label>color image </label>
+                            <Input
+                              name="image_color"
+                              type="file"
+                              multiple
+                              onChange={handleFileEventColor}
+                              disabled={fileLimit}
+                            />
+
+                            <label htmlFor="fileUpload"></label>
                         </FormGroup>
+
                         {message && <p>{message}</p>}
 
                         <div className="update ml-auto mr-auto">
@@ -423,8 +683,18 @@ function AddProduct() {
                         <th>stock</th>
                         <th>old_price</th>
                         <th>category_id</th>
-                        <th>color_id</th>
-                        <th>img_main</th>
+                        <th>color name</th>
+                        <th>model_id</th>
+                        <th>details</th>
+                        <th>screen</th>
+                        <th>battery</th>
+                        <th>cameraFront</th>
+                        <th>cameraBack</th>
+                        <th>material</th>
+                        <th>gpu</th>
+                        <th>cpu</th>
+                        <th>typeCharger</th>
+                        <th>typeId</th>
                         <th>image_slider</th>
                         <th>Action</th>
                       </tr>
@@ -438,18 +708,30 @@ function AddProduct() {
                             <td>{product.stock}</td>
                             <td>{product.old_price}</td>
                             <td>{product.category_id}</td>
-                            <td>{product.color_id}</td>
+                            <td>{product.color_name}</td>
+                            <td>{product.model_id}</td>
+                            <td>{product.details}</td>
+                            <td>{product.screen}</td>
+                            <td>{product.battery}</td>
+                            <td>{product.camera_front}</td>
+                            <td>{product.camera_back}</td>
+                            <td>{product.material}</td>
+                            <td>{product.gpu}</td>
+                            <td>{product.cpu}</td>
+                            <td>{product.type_charger}</td>
+                            <td>{product.typeId}</td>
                             <td>
-                              <img src={product.imagePath} alt="" />
-                            </td>
-                            <td>
-                              <img
-                                src={product.imagePath}
-                                alt=""
-                                onError={(e) =>
-                                  console.log("Image load error", e)
-                                }
-                              />
+                              {Array.isArray(product.images) &&
+                                product.images.map((image, imageIndex) => (
+                                  <img
+                                    src={`http://localhost:1010/${image.image_path}`}
+                                    alt=""
+                                    onError={(e) =>
+                                      console.log("Image load error", e)
+                                    }
+                                    style={{ width: "100px", height: "100px" }}
+                                  />
+                                ))}
                             </td>
                             <td>
                               <button
@@ -481,6 +763,7 @@ function AddProduct() {
                     <CardTitle tag="h5">Update Product</CardTitle>
                   </CardHeader>
                   <CardBody>
+                    {" "}
                     <Form>
                       <Row>
                         <Col className="px-1" md="3">
@@ -521,7 +804,7 @@ function AddProduct() {
                             />
                           </FormGroup>
                         </Col>
-                        <Col className="pl-1" md="6">
+                        <Col className="pl-1 mt-4" md="6">
                           <FormGroup>
                             <label>Category</label>
                             <select
@@ -563,79 +846,130 @@ function AddProduct() {
                         </Col>
                         <Col className="pl-1" md="6">
                           <FormGroup>
-                            <label>img_main</label>
+                            <label>Model</label>
+                            <select
+                              value={model_id}
+                              onChange={(e) => setModelId(e.target.value)}
+                            >
+                              <option value="">Select a Model</option>
+                              {models.map((model) => (
+                                <option
+                                  key={model.model_id}
+                                  value={model.model_id}
+                                >
+                                  {model.model_name}
+                                </option>
+                              ))}
+                            </select>
+                          </FormGroup>
+                        </Col>
+                        <Select
+                          isMulti
+                          options={colors}
+                          value={colors.filter((color) =>
+                            selectedColors.includes(color.value)
+                          )}
+                          onChange={handleColorChange}
+                        />
+                      </Row>
+                      <Row>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Details</label>
                             <Input
-                              type="file"
-                              onChange={(e) => setImgMain(e.target.value)}
+                              type="text"
+                              onChange={(e) => setDetails(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Screen</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setScreen(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Battery</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setBattery(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
                       </Row>
                       <Row>
-                        <Col className="pl-1" md="6">
+                        <Col className="pr-1" md="3">
                           <FormGroup>
-                            <label>image slider</label>
+                            <label>Camera front</label>
                             <Input
-                              type="file"
-                              multiple
-                              accept="image/*"
-                              onChange={handleFileEvent}
-                              disabled={fileLimit}
+                              type="text"
+                              onChange={(e) => setCameraFront(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Camera Back</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setCameraBack(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Material</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setMaterial(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
                       </Row>
-                      {/* <Row>
-                 <Col md="12">
-                   <FormGroup>
-                     <label>Address</label>
-                     <Input
-                       defaultValue="Melbourne, Australia"
-                       placeholder="Home Address"
-                       type="text"
-                     />
-                   </FormGroup>
-                 </Col>
-               </Row>
-               <Row>
-                 <Col className="pr-1" md="4">
-                   <FormGroup>
-                     <label>City</label>
-                     <Input
-                       defaultValue="Melbourne"
-                       placeholder="City"
-                       type="text"
-                     />
-                   </FormGroup>
-                 </Col>
-                 <Col className="px-1" md="4">
-                   <FormGroup>
-                     <label>Country</label>
-                     <Input
-                       defaultValue="Australia"
-                       placeholder="Country"
-                       type="text"
-                     />
-                   </FormGroup>
-                 </Col>
-                 <Col className="pl-1" md="4">
-                   <FormGroup>
-                     <label>Postal Code</label>
-                     <Input placeholder="ZIP Code" type="number" />
-                   </FormGroup>
-                 </Col>
-               </Row>
-               <Row>
-                 <Col md="12">
-                   <FormGroup>
-                     <label>About Me</label>
-                     <Input
-                       type="textarea"
-                       defaultValue="Oh so, your weak rhyme You doubt I'll bother, reading into it"
-                     />
-                   </FormGroup>
-                 </Col>
-               </Row> */}
+                      <Row>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Gpu</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setGpu(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Cpu</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setCpu(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Type Charger</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setTypeCharger(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col className="pr-1" md="3">
+                          <FormGroup>
+                            <label>Type id</label>
+                            <Input
+                              type="text"
+                              onChange={(e) => setTypeId(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
                       <Row>
                         <div className="update ml-auto mr-auto">
                           <Button
@@ -651,6 +985,17 @@ function AddProduct() {
                                 old_price,
                                 category_id,
                                 color_id,
+                                model_id,
+                                details,
+                                screen,
+                                battery,
+                                camera_front,
+                                camera_back,
+                                material,
+                                gpu,
+                                cpu,
+                                type_charger,
+                                typeId,
                                 image_main,
                                 image_slider
                               )
@@ -661,6 +1006,64 @@ function AddProduct() {
                         </div>
                       </Row>
                     </Form>
+                    <Row>
+                      {openImage && (
+                        <div>
+                          <Col className="pl-1" md="6">
+                            <div>
+                              <label htmlFor="productId">Product ID:</label>
+                              <input
+                                type="text"
+                                id="productId"
+                                value={product_id}
+                                // disabled
+                                onChange={handleProductIdChange}
+                              />
+                            </div>
+                          </Col>
+
+                          <Col className="pl-1" md="6">
+                            <FormGroup
+                              action="/addproduct"
+                              method="POST"
+                              enctype="multipart/form-data"
+                            >
+                              <div>
+                                <label>image slider</label>
+                                <Input
+                                  name="image"
+                                  type="file"
+                                  multiple
+                                  onChange={handleFileEvent}
+                                  disabled={fileLimit}
+                                />
+
+                                <label htmlFor="fileUpload"></label>
+                              </div>
+
+                              {/* {image_slider.map((imageUrl, index) => (
+                            <div key={index}>
+                        <img src={imageUrl} alt="" />
+                      </div>
+                    ))} */}
+                            </FormGroup>
+
+                            {message && <p>{message}</p>}
+
+                            <div className="update ml-auto mr-auto">
+                              <Button
+                                className="btn-round"
+                                color="primary"
+                                type="button"
+                                onClick={handleUpdateImg}
+                              >
+                                Add Image
+                              </Button>
+                            </div>
+                          </Col>
+                        </div>
+                      )}
+                    </Row>
                   </CardBody>
                 </div>
               )}

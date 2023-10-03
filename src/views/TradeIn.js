@@ -1,6 +1,14 @@
+/*!
 
+=========================================================
+* Paper Dashboard React - v1.3.2
+===================================================
+=====================================================
+
+
+*/
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState,useEffect } from "react";
 
 // reactstrap components
 import {
@@ -19,22 +27,22 @@ import {
 } from "reactstrap";
 import Tables from "./Tables";
 
-function Blog() {
+
+
+function TradeIn() {
   const [add, setAdd] = useState([]);
   const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
-  const [updateBlogId, setUpdateBlogId] = useState("");
-  const [updateTitle, setUpdateTitle] = useState("");
-  const [updateDate, setUpdateDate] = useState("");
-  const [updateImage, setUpdateImage] = useState(""); // Separate state for image
-  const [updateDetails, setUpdateDetails] = useState(""); // Separate state for details
+  const [updateId, setUpdateId] = useState("");
+  const [your_device, setYour_device] = useState("");
+  const [up_to, setUp_to] = useState("");
+  const [category_id, setCategory_id] = useState(""); // Separate state for image
   const [del, setDel] = useState([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "https://monkfish-app-wyvrc.ondigitalocean.app/blog/data"
-        );
+        const response = await axios.get("http://localhost:1010/tradein/gettrades");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
@@ -43,68 +51,44 @@ function Blog() {
 
     fetchData();
   }, []);
- 
- 
- 
- 
-
-
-
-
   const handlePost = async () => {
+    
     try {
-      const formData = new FormData();
-      formData.append('title', updateTitle);
-      formData.append('date', updateDate);
-      formData.append('details', updateDetails);
-      formData.append('image_blog', updateImage); // Append the selected image file
-  
       const response = await axios.post(
-        "http://localhost:1010/blog/add",
-        formData, // Send the FormData object
+        "http://localhost:1010/tradein/add",
         {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-          },
+            your_device: your_device, // Use the provided title
+            up_to: up_to, // Use the provided date
+            category_id: category_id, // Use the provided details
+        
         }
       );
-  
+      console.log(response.data);
+      // Call the onSave callback with the data
       setAdd(response.data);
     } catch (error) {
       console.log(`Error fetching post data  ${error}`);
     }
   };
-  const openUpdateForm = (p_id) => {
+  const openUpdateForm = (_id) => {
     setIsUpdateFormVisible(true);
-    setUpdateBlogId(p_id);
+    setUpdateId(_id);
   };
 
-
-
-
-
-
-  const handleUpdate = async (id_blogs) => {
+  const handleUpdate = async (id) => {
     try {
-      const formData = new FormData();
-      formData.append('title', updateTitle);
-      formData.append('date', updateDate);
-      formData.append('details', updateDetails);
-      formData.append('image_blog', updateImage); // Append the selected image file
-  
       const response = await axios.put(
-        `http://localhost:1010/blog/edit/${id_blogs}`,
-        formData, // Send the FormData object
+        `http://localhost:1010/tradein/edit/${id}`,
         {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-          },
+            your_device: your_device, // Use the provided title
+            up_to: up_to, // Use the provided date
+            category_id: category_id, // Use the provided details
         }
       );
       console.log(response.data);
       setAdd((prevAdd) =>
-        prevAdd.map((blog) =>
-          blog.id_blogs === id_blogs ? response.data : blog
+        prevAdd.map((device) =>
+        device.id === id ? response.data : device
         )
       );
       setIsUpdateFormVisible(false);
@@ -113,16 +97,16 @@ function Blog() {
     }
   };
 
-  const handleDelete = async (id_blogs, index) => {
+  const handleDelete = async (id, index) => {
     try {
       const response = await axios.delete(
-        `http://localhost:1010/blog/delete/${id_blogs}`
+        `http://localhost:1010/tradein/delete/${id}`
       );
-      console.log(id_blogs);
+      console.log(id);
       console.log(response);
 
-      setAdd((prevProduct) =>
-        prevProduct.filter((product) => product.id_blogs !== id_blogs)
+      setAdd((prevDevice) =>
+      prevDevice.filter((device) => device.id !== id)
       );
 
       setDel((prev) => prev.filter((_, i) => i !== index));
@@ -137,61 +121,50 @@ function Blog() {
           <Col md="12">
             <Card className="card-user">
               <CardHeader>
-                <CardTitle tag="h5">Add Blog</CardTitle>
+                <CardTitle tag="h5">Add TradeIn</CardTitle>
               </CardHeader>
               <CardBody>
                 <Form>
                   <Row>
                     <Col className="px-1" md="3">
                       <FormGroup>
-                        <label>Title</label>
+                        <label>your Device</label>
                         <Input
                           type="text"
-                          onChange={(e) => setUpdateTitle(e.target.value)}
+                          onChange={(e) => setYour_device(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
                     <Col className="px-1" md="3">
                       <FormGroup>
-                        <label>Date</label>
+                        <label>up to</label>
                         <Input
                           type="text"
-                          onChange={(e) => setUpdateDate(e.target.value)}
+                          onChange={(e) => setUp_to(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
                     <Col className="pl-1" md="4">
                       <FormGroup>
-                        <label htmlFor="exampleInputEmail1">Image </label>
-                        <input
-                          type="file"
-                          name="image_blog"
-                          onChange={(e) => setUpdateImage(e.target.files[0])} // Update state with the selected file
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label>Details</label>
+                        <label htmlFor="exampleInputEmail1">category id </label>
                         <Input
-                          type="textarea"
-                          onChange={(e) => setUpdateDetails(e.target.value)}
+                          type="text"
+                          onChange={(e) => setCategory_id(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
+                 
 
                   <Row>
                     <div className="update ml-auto mr-auto">
                       <Button
                         className="btn-round"
                         color="primary"
-                        type="button"
+                        type="submit"
                         onClick={handlePost}
                       >
-                        Add Blog
+                        Add TradeIn
                       </Button>
                     </div>
                   </Row>
@@ -205,47 +178,37 @@ function Blog() {
             <Col md="12">
               <Card>
                 <CardHeader>
-                  <CardTitle tag="h4">Blog Table</CardTitle>
+                  <CardTitle tag="h4">TradeIn Table</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Table responsive>
                     <thead className="text-primary">
                       <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Image</th>
-                        <th>Details</th>
+                        <th>Your Device</th>
+                        <th>Up To</th>
+                        <th>Category Id</th>
                       </tr>
                     </thead>
                     {add &&
                       Array.isArray(add) &&
-                      add.map((blog, index) => (
-                        <tbody key={blog.id_blogs}>
-                          <tr key={blog.id_blogs}>
-                            <td>{blog.title}</td>
-                            <td>{blog.date}</td>
-                            <td>
-                              <img
-                                src={`http://localhost:1010/${blog.image_blog}`}
-                                alt="blog"
-                                style={{ width: "20%", height: "20%" }}
-                                onError={(e) =>
-                                  console.log("Image load error", e)
-                                }
-                              />{" "}
-                            </td>
-                            <td>{blog.details}</td>
+                      add.map((device, index) => (
+                        <tbody key={device.id}>
+                          <tr key={device.id}>
+                            <td>{device.your_device}</td>
+                            <td>{device.up_to}</td>
+                          
+                            <td>{device.category_id}</td>
 
                             <td>
                               <button
                                 onClick={
-                                  () => handleDelete(blog.id_blogs, index) // Calling handleDelete with the product's _id and index
+                                  () => handleDelete(device.id, index) // Calling handleDelete with the product's _id and index
                                 }
                               >
                                 delete
                               </button>
                               <button
-                                onClick={() => openUpdateForm(blog.id_blogs)}
+                                onClick={() => openUpdateForm(device.id)}
                               >
                                 update
                               </button>
@@ -265,50 +228,41 @@ function Blog() {
               {isUpdateFormVisible && (
                 <div>
                   <CardHeader>
-                    <CardTitle tag="h5">Update Blog</CardTitle>
+                    <CardTitle tag="h5">Update TradeIn</CardTitle>
                   </CardHeader>
                   <CardBody>
                     <Form>
                       <Row>
                         <Col className="px-1" md="3">
                           <FormGroup>
-                            <label>Title</label>
+                            <label>Your Device</label>
                             <Input
                               type="text"
-                              value={updateTitle}
-                              onChange={(e) => setUpdateTitle(e.target.value)}
+                              value={your_device}
+                              onChange={(e) => setYour_device(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
                         <Col className="px-1" md="3">
                           <FormGroup>
-                            <label>Date</label>
+                            <label>up to</label>
                             <Input
                               type="text"
-                              value={updateDate}
-                              onChange={(e) => setUpdateDate(e.target.value)}
+                              value={up_to}
+                              onChange={(e) => setUp_to(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
-                        <Col className="pl-1" md="4">
-                        <FormGroup>
-                        <label htmlFor="exampleInputEmail1">Image </label>
-                        <input
-                          type="file"
-                          name="image_blog"
-                          onChange={(e) => setUpdateImage(e.target.files[0])} // Update state with the selected file
-                        />
-                      </FormGroup>
-                        </Col>
+                      
                       </Row>
                       <Row>
                         <Col md="12">
                           <FormGroup>
-                            <label>Details</label>
+                            <label>category id</label>
                             <Input
-                              type="textarea"
-                              value={updateDetails}
-                              onChange={(e) => setUpdateDetails(e.target.value)}
+                              type="text"
+                              value={category_id}
+                              onChange={(e) => setCategory_id(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
@@ -319,9 +273,9 @@ function Blog() {
                             className="btn-round"
                             color="primary"
                             type="submit"
-                            onClick={() => handleUpdate(updateBlogId)}
+                            onClick={() => handleUpdate(updateId)}
                           >
-                            Update Blog
+                            Update TradeIn
                           </Button>
                         </div>
                       </Row>
@@ -337,4 +291,4 @@ function Blog() {
   );
 }
 
-export default Blog;
+export default TradeIn;

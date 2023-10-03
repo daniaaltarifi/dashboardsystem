@@ -33,6 +33,11 @@ import HomeSlider from "views/HomeSlider";
 import SpecialOffers from "views/SpecialOffers";
 import Banners from "views/Banners";
 import TopSelling from "views/TopSelling";
+import Category from "views/Category";
+import Colors from 'views/Colors'
+import JoinTeam from 'views/JoinTeam'
+import TradeIn from "views/TradeIn"
+import Subscribe from "views/Subscribe";
 var routes = [
   {
     path: "/dashboard",
@@ -55,18 +60,32 @@ var routes = [
     component: <SpecialOffers />,
     layout: "/admin",
   },
-   {
-    path: "/banners",
-    name: "Banners",
-    icon: "nc-icon nc-diamond",
-    component: <Banners />,
-    layout: "/admin",
-  },
+  //  {
+  //   path: "/category",
+  //   name: "Category",
+  //   icon: "nc-icon nc-diamond",
+  //   component: <Category />,
+  //   layout: "/admin",
+  // },
+  // {
+  //   path: "/color",
+  //   name: "Color",
+  //   icon: "nc-icon nc-diamond",
+  //   component: <Colors/>,
+  //   layout: "/admin",
+  // },
    {
     path: "/topselling",
     name: "Top Selling ",
     icon: "nc-icon nc-diamond",
     component: <TopSelling />,
+    layout: "/admin",
+  },
+  {
+    path: "/jointeam",
+    name: "Join Team",
+    icon: "nc-icon nc-diamond",
+    component: <JoinTeam/>,
     layout: "/admin",
   },
   // {
@@ -123,6 +142,20 @@ var routes = [
     name: "Orders",
     icon: "nc-icon nc-single-02",
     component: <Orders/>,
+    layout: "/admin",
+  },
+  {
+    path: "/tradein",
+    name: "TradeIn",
+    icon: "nc-icon nc-diamond",
+    component: <TradeIn/>,
+    layout: "/admin",
+  },
+  {
+    path: "/subscribe",
+    name: "Subscribe",
+    icon: "nc-icon nc-diamond",
+    component: <Subscribe/>,
     layout: "/admin",
   },
   // {

@@ -49,7 +49,7 @@ function Orders() {
     const fetchData = async () => {
       try {
         //modify route
-        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/product/get");
+        const response = await axios.get("http://localhost:1010/order/getorder");
         setAdd(response.data);
       } catch (error) {
         console.log(`Error getting news from frontend: ${error}`);
@@ -60,17 +60,17 @@ function Orders() {
   }, []);
 
 
-  const handleDelete = async (id, index) => {
+  const handleDelete = async (order_id, index) => {
     try {
                  //modify route
       const response = await axios.delete(
-        `https://monkfish-app-wyvrc.ondigitalocean.app/product/delete/${id}`
+        `http://localhost:1010/order/delete/${order_id}`
       );
-      console.log(id);
+      console.log(order_id);
       console.log(response);
 
-      setAdd((prevUser) =>
-      prevUser.filter((user) => user.id !== id)
+      setAdd((prevOrder) =>
+      prevOrder.filter((order) => order.order_id !== order_id)
       );
 
       setDel((prev) => prev.filter((_, i) => i !== index));
@@ -93,25 +93,41 @@ function Orders() {
                   <Table responsive>
                     <thead className="text-primary">
                       <tr>
-                        <th>order</th>
-                        <th>note</th>
-                        <th>role_id</th>
-                        <th>Action</th>
+                        <th>First_name</th>
+                        <th>Last_name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Zip_Postal_code</th>
+                        <th>Delivery_Method</th>
+                        <th>Carditem</th>
+                        <th>total</th>
+                  
                       </tr>
                     </thead>
                     {add &&
                       Array.isArray(add) &&
-                      add.map((user,index) => (
-                        <tbody key={user.id}>
+                      add.map((order,index) => (
+                        <tbody key={order.order_id}>
                           <tr >
-                            <td>{user.username}</td>
-                            <td>{user.email}</td>
-                            <td>{user.role_id}</td>
+                            <td>{order.First_name}</td>
+                            <td>{order.Last_name}</td>
+                            <td>{order.Phone}</td>
+                            <td>{order.Email}</td>
+                            <td>{order.Address}</td>
+                            <td>{order.City}</td>
+                            <td>{order.Country}</td>
+                            <td>{order.Zip_Postal_code}</td>
+                            <td>{order.Delivery_Method}</td>
+                            <td>{order.Carditem}</td>
+                            <td>{order.total}</td>
                             
                             <td>
                               <button
                                  onClick={() =>
-                                    handleDelete(user.id,index) // Calling handleDelete with the product's _id and index
+                                    handleDelete(order.order_id,index) // Calling handleDelete with the product's _id and index
                                   }
                               >
                                 delete

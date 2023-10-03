@@ -1,4 +1,12 @@
+/*!
 
+=========================================================
+* Paper Dashboard React - v1.3.2
+===================================================
+=====================================================
+
+
+*/
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 
@@ -19,11 +27,11 @@ import {
 } from "reactstrap";
 import Tables from "./Tables";
 
-function HomeSlider() {
+function Category() {
   const [add, setAdd] = useState([]);
   const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
-  const [updateBlogId, setUpdateBlogId] = useState("");
-  const [image_slider, setImage_slider] = useState("");
+  const [updatecategory_id, setUpdateCategory_id] = useState("");
+  const [category_name, setCategoryName] = useState("");
   const [updateDate, setUpdateDate] = useState("");
   const [updateImage, setUpdateImage] = useState(""); // Separate state for image
   const [updateDetails, setUpdateDetails] = useState(""); // Separate state for details
@@ -33,9 +41,10 @@ function HomeSlider() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:1010/homeslider/gethomeslider"
+          "http://localhost:1010/category/getproducts"
         );
         setAdd(response.data);
+        console.log("add",add)
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
       }
@@ -43,65 +52,37 @@ function HomeSlider() {
 
     fetchData();
   }, []);
- 
- 
- 
- 
-
-
-
-
   const handlePost = async () => {
     try {
-      const formData = new FormData();
-      formData.append('image_slider', image_slider);
-    
-  
-      const response = await axios.post(
-        "http://localhost:1010/homeslider/add",
-        formData, // Send the FormData object
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-          },
-        }
-      );
-  
+      const response = await axios.post("http://localhost:1010/category/add", {
+        category_name: category_name, // Use the provided title
+   
+      });
+      console.log(response.data);
+      // Call the onSave callback with the data
       setAdd(response.data);
-      console.log("getorder",add)
     } catch (error) {
       console.log(`Error fetching post data  ${error}`);
     }
   };
-  const openUpdateForm = (p_id) => {
+  const openUpdateForm = (category_id) => {
     setIsUpdateFormVisible(true);
-    setUpdateBlogId(p_id);
+    setUpdateCategory_id(category_id);
   };
 
-
-
-
-
-
-  const handleUpdate = async (id) => {
+  const handleUpdate = async (category_id) => {
     try {
-      const formData = new FormData();
-      formData.append('image_slider', image_slider);
-    
-  
       const response = await axios.put(
-        `http://localhost:1010/blog/edit/${id}`,
-        formData, // Send the FormData object
+        `http://localhost:1010/category/edit/${category_id}`,
         {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-          },
+            category_name: category_name, // Use the provided title
+      
         }
       );
       console.log(response.data);
       setAdd((prevAdd) =>
-        prevAdd.map((blog) =>
-          blog.id === id ? response.data : blog
+        prevAdd.map((category) =>
+          category.category_id === category_id ? response.data : category
         )
       );
       setIsUpdateFormVisible(false);
@@ -110,16 +91,16 @@ function HomeSlider() {
     }
   };
 
-  const handleDelete = async (id, index) => {
+  const handleDelete = async (category_id, index) => {
     try {
       const response = await axios.delete(
-        `http://localhost:1010/homeslider/delete/${id}`
+        `http://localhost:1010/category/delete/${category_id}`
       );
-      console.log(id);
+      console.log(category_id);
       console.log(response);
 
-      setAdd((prevProduct) =>
-        prevProduct.filter((product) => product.id !== id)
+      setAdd((prevCategory) =>
+      prevCategory.filter((category) => category.category_id !== category_id)
       );
 
       setDel((prev) => prev.filter((_, i) => i !== index));
@@ -134,33 +115,31 @@ function HomeSlider() {
           <Col md="12">
             <Card className="card-user">
               <CardHeader>
-                <CardTitle tag="h5">Add Home Image</CardTitle>
+                <CardTitle tag="h5">Add Category</CardTitle>
               </CardHeader>
               <CardBody>
                 <Form>
                   <Row>
-                 
-                    <Col className="pl-1" md="4">
+                    <Col className="px-1" md="3">
                       <FormGroup>
-                        <label htmlFor="exampleInputEmail1">Image </label>
-                        <input
-                          type="file"
-                          name="image_blog"
-                          onChange={(e) => setImage_slider(e.target.files[0])} // Update state with the selected file
+                        <label>category Name</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => setCategoryName(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
-                 
+
                   <Row>
-                    <div className="update ml-auto mr-auto">
+                    <div className="update ">
                       <Button
                         className="btn-round"
                         color="primary"
-                        type="button"
+                        type="submit"
                         onClick={handlePost}
                       >
-                        Add Image
+                        Add category
                       </Button>
                     </div>
                   </Row>
@@ -174,44 +153,36 @@ function HomeSlider() {
             <Col md="12">
               <Card>
                 <CardHeader>
-                  <CardTitle tag="h4">Blog Table</CardTitle>
+                  <CardTitle tag="h4">Category Table</CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Table responsive>
                     <thead className="text-primary">
                       <tr>
-                        <th>Image</th>
+                        <th>Category Name</th>
                       </tr>
                     </thead>
                     {add &&
                       Array.isArray(add) &&
-                      add.map((img, index) => (
-                        <tbody key={img.id}>
-                          <tr key={img.id}>
-                           
-                            <td>
-                              <img
-                                src={`http://localhost:1010/${img.image_slider}`}
-                                alt="img"
-                                // onError={(e) =>
-                                //   console.log("Image load error", e)
-                                // }
-                              />{" "}
-                            </td>
+                      add.map((category, index) => (
+                        <tbody key={category.category_id}>
+                          <tr key={category.category_id}>
+                            <td>{category.category_name}</td>
+                        
 
                             <td>
                               <button
                                 onClick={
-                                  () => handleDelete(img.id, index) // Calling handleDelete with the product's _id and index
+                                  () => handleDelete(category.category_id, index) // Calling handleDelete with the product's _id and index
                                 }
                               >
                                 delete
                               </button>
-                              {/* <button
-                                onClick={() => openUpdateForm(img.id)}
+                              <button
+                                onClick={() => openUpdateForm(category.category_id)}
                               >
                                 update
-                              </button> */}
+                              </button>
                             </td>
                           </tr>
                         </tbody>
@@ -228,33 +199,31 @@ function HomeSlider() {
               {isUpdateFormVisible && (
                 <div>
                   <CardHeader>
-                    <CardTitle tag="h5">Update Blog</CardTitle>
+                    <CardTitle tag="h5">Update Category</CardTitle>
                   </CardHeader>
                   <CardBody>
                     <Form>
                       <Row>
-                       
-                        <Col className="pl-1" md="4">
-                        <FormGroup>
-                        <label htmlFor="exampleInputEmail1">Image </label>
-                        <input
-                          type="file"
-                          name="image_blog"
-                          onChange={(e) => setImage_slider(e.target.files[0])} // Update state with the selected file
-                        />
-                      </FormGroup>
+                        <Col className="px-1" md="3">
+                          <FormGroup>
+                            <label>category Name</label>
+                            <Input
+                              type="text"
+                              value={category_name}
+                              onChange={(e) => setCategoryName(e.target.value)}
+                            />
+                          </FormGroup>
                         </Col>
                       </Row>
-                     
                       <Row>
                         <div className="update ml-auto mr-auto">
                           <Button
                             className="btn-round"
                             color="primary"
                             type="submit"
-                            onClick={() => handleUpdate(updateBlogId)}
+                            onClick={() => handleUpdate(updatecategory_id)}
                           >
-                            Update Blog
+                            Update category
                           </Button>
                         </div>
                       </Row>
@@ -270,4 +239,4 @@ function HomeSlider() {
   );
 }
 
-export default HomeSlider;
+export default Category;

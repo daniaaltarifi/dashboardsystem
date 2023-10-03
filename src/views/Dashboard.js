@@ -1,26 +1,7 @@
-/*!
 
-=========================================================
-* Paper Dashboard React - v1.3.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-* Licensed under MIT (https://github.com/creativetimofficial/paper-dashboard-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React ,{useEffect,useState}from "react";
-// react plugin used to create charts
 import { Line, Pie } from "react-chartjs-2";
 import axios from "axios";
-// reactstrap components
 import {
   Card,
   CardHeader,
@@ -30,7 +11,6 @@ import {
   Row,
   Col,
 } from "reactstrap";
-// core components
 import {
   dashboard24HoursPerformanceChart,
   dashboardEmailStatisticsChart,
@@ -48,9 +28,9 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/productdetails/getproductdetails");
+        const response = await axios.get("http://localhost:1010/productdetails/getproductdetails");
         setProduct(response.data);
-        console.log(product);
+        console.log("[product]",product)
       } catch (error) {
         console.log(`Error getting news from frontend: ${error}`);
       }
@@ -85,7 +65,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://monkfish-app-wyvrc.ondigitalocean.app/orders/getorder");
+        const response = await axios.get("http://localhost:1010/order/getorder");
         setOrders(response.data);
       } catch (error) {
         console.log(`Error getting Blog from frontend: ${error}`);
