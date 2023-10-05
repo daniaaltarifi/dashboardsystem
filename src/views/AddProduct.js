@@ -58,7 +58,7 @@ function AddProduct() {
   const [color_name, setColor_name] = useState("");
   const [image_color, setImage_color] = useState("");
   const [imagesColorArr, setImagesColorArr] = useState([]);
-
+const[fullColorData,setFullColorData]=useState([])
   const handleImageChange = (e) => {
     const selectedImages = Array.from(e.target.files);
     setImages(selectedImages);
@@ -69,6 +69,23 @@ function AddProduct() {
   };
 
   const handleUploadFiles = (files) => {
+    const uploaded = [...uploadedFiles];
+    let limitExceeded = false;
+    files.some((file) => {
+      if (uploaded.findIndex((f) => f.name === file.name) === -1) {
+        uploaded.push(file);
+        if (uploaded.length === MAX_COUNT) setFileLimit(true);
+        if (uploaded.length > MAX_COUNT) {
+          alert(`You can only add a maximum of ${MAX_COUNT} files`);
+          setFileLimit(false);
+          limitExceeded = true;
+          return true;
+        }
+      }
+    });
+    if (!limitExceeded) setUploadedFiles(uploaded);
+  };
+  const handleUploadFilesColor = (files) => {
     const uploaded = [...uploadedFiles];
     let limitExceeded = false;
     files.some((file) => {
@@ -109,7 +126,7 @@ function AddProduct() {
     });
 
     setImageSlider(fileURLs);
-    handleUploadFiles(chosenFiles);
+    handleUploadFilesColor(chosenFiles);
     const selectedImages = Array.from(e.target.files);
     setImages(selectedImages);
   };
@@ -168,7 +185,7 @@ function AddProduct() {
   // Handle color selection
   const handleColorChange = (selectedOptions) => {
     const selectedColorNames = selectedOptions.map((option) => option.label);
-    setSelectedColors(selectedColorNames);
+    setColor_name(selectedColorNames);
     console.log("selectedColors", selectedColorNames);
   };
 
@@ -236,6 +253,19 @@ function AddProduct() {
       console.log(`Error fetching images: ${error}`);
     }
   };
+
+  const fetchColorData = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:1010/color/getproductdetails/${product_id}`
+      );
+      const relativePaths = response.data;
+      console.log("imagecolor",imagesColorArr)
+      setImagesColorArr(relativePaths); // Update getImg state with absolute image URLs
+    } catch (error) {
+      console.log(`Error fetching color images: ${error}`);
+    }
+  };
   const handleUpload = async () => {
     try {
       if (!product_id) {
@@ -246,7 +276,7 @@ function AddProduct() {
       const formData = new FormData();
       formData.append("product_id", product_id);
       images.forEach((image) => {
-        formData.append("image", image);
+        formData.append("image_path", image);
       });
       const response = await axios.post(
         "http://localhost:1010/newimgproducts/upload",
@@ -257,8 +287,28 @@ function AddProduct() {
           },
         }
       );
+      
+      setMessage(response.data.message);
+      fetchImages(); // Call fetchImages here
+      setOpenImage(false);
+      console.log("getimg", getImg);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      setMessage("Image upload failed");
+    }
+  };
+  const handleUploadColor = async () => {
+    try {
+      if (!product_id) {
+        alert("Please enter a product ID.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("product_id", product_id);
+     
       // Post the selected color to the "color" table
-      formData.append("color_name", selectedColors);
+      formData.append("color_name", color_name);
       imagesColorArr.forEach((image_color) => {
         formData.append("image_color", image_color);
       });
@@ -271,21 +321,26 @@ function AddProduct() {
           },
         }
       );
+      setFullColorData(colorResponse)
+console.log("colcolorResponseors",fullColorData)
 
+console.log("colors",color_name)
       console.log("Color added:", colorResponse.data);
-      setMessage(response.data.message);
-      fetchImages(); // Call fetchImages here
-      setOpenImage(false);
-      console.log("getimg", getImg);
+      setMessage(colorResponse.data.message);
+      fetchColorData();
+      // fetchImages(); // Call fetchImages here
+      // setOpenImage(false);
     } catch (error) {
       console.error("Error uploading images:", error);
       setMessage("Image upload failed");
     }
   };
-
   useEffect(() => {
     console.log("getimg", getImg);
   }, [getImg]);
+  useEffect(() => {
+    console.log("colorimg", imagesColorArr);
+  }, [imagesColorArr]);
 
   const handleUpdate = async (
     p_id,
@@ -357,7 +412,7 @@ function AddProduct() {
       const formData = new FormData();
       formData.append("product_id", product_id);
       images.forEach((image) => {
-        formData.append("image", image);
+        formData.append("image_path", image);
       });
       const response = await axios.put(
         `http://localhost:1010/newimgproducts/images/${product_id}/${id}`,
@@ -618,7 +673,7 @@ function AddProduct() {
                           <div>
                             <label>image slider</label>
                             <Input
-                              name="image"
+                              name="image_path"
                               type="file"
                               multiple
                               onChange={handleFileEvent}
@@ -630,9 +685,10 @@ function AddProduct() {
                           <Select
                             isMulti
                             options={colors}
-                            value={colors.filter(
-                              (color) => selectedColors.includes(color.label) // Change 'value' to 'label'
-                            )}
+                            
+                            // value={colors.filter(
+                            //   (color) => selectedColors.includes(color.label) // Change 'value' to 'label'
+                            // )}
                             onChange={handleColorChange}
                           />
                            <label>color image </label>
@@ -650,6 +706,14 @@ function AddProduct() {
                         {message && <p>{message}</p>}
 
                         <div className="update ml-auto mr-auto">
+                        <Button
+                            className="btn-round"
+                            color="primary"
+                            type="button"
+                            onClick={handleUploadColor}
+                          >
+                            Add Color
+                          </Button>
                           <Button
                             className="btn-round"
                             color="primary"
@@ -863,14 +927,14 @@ function AddProduct() {
                             </select>
                           </FormGroup>
                         </Col>
-                        <Select
+                        {/* <Select
                           isMulti
                           options={colors}
                           value={colors.filter((color) =>
                             selectedColors.includes(color.value)
                           )}
                           onChange={handleColorChange}
-                        />
+                        /> */}
                       </Row>
                       <Row>
                         <Col className="pr-1" md="3">
@@ -1031,11 +1095,13 @@ function AddProduct() {
                               <div>
                                 <label>image slider</label>
                                 <Input
-                                  name="image"
+                                  name="image_path"
                                   type="file"
                                   multiple
                                   onChange={handleFileEvent}
                                   disabled={fileLimit}
+                                  enctype="multipart/form-data"
+
                                 />
 
                                 <label htmlFor="fileUpload"></label>

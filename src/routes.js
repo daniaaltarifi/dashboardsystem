@@ -38,6 +38,7 @@ import Colors from 'views/Colors'
 import JoinTeam from 'views/JoinTeam'
 import TradeIn from "views/TradeIn"
 import Subscribe from "views/Subscribe";
+import Test from "views/Test";
 var routes = [
   {
     path: "/dashboard",
@@ -81,6 +82,13 @@ var routes = [
     component: <TopSelling />,
     layout: "/admin",
   },
+  // {
+  //   path: "/test",
+  //   name: "Test ",
+  //   icon: "nc-icon nc-diamond",
+  //   component: <Test />,
+  //   layout: "/admin",
+  // },
   {
     path: "/jointeam",
     name: "Join Team",
