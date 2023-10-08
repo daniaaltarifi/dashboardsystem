@@ -1,12 +1,4 @@
-/*!
 
-=========================================================
-* Paper Dashboard React - v1.3.2
-===================================================
-=====================================================
-
-
-*/
 import axios from "axios";
 import React, { useState,useEffect } from "react";
 
@@ -70,9 +62,9 @@ function TradeIn() {
       console.log(`Error fetching post data  ${error}`);
     }
   };
-  const openUpdateForm = (_id) => {
+  const openUpdateForm = (id) => {
     setIsUpdateFormVisible(true);
-    setUpdateId(_id);
+    setUpdateId(id);
   };
 
   const handleUpdate = async (id) => {

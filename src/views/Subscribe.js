@@ -1,12 +1,4 @@
-/*!
 
-=========================================================
-* Paper Dashboard React - v1.3.2
-===================================================
-=====================================================
-
-
-*/
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 
@@ -91,17 +83,17 @@ function Subscribe() {
     }
   };
 
-  const handleDelete = async (category_id, index) => {
+  const handleDelete = async (id, index) => {
     try {
       const response = await axios.delete(
-        `http://localhost:1010/category/delete/${category_id}`
+        `http://localhost:1010/subscribe/delete/${id}`
       );
-      console.log(category_id);
+      console.log(id);
       console.log(response);
 
       setAdd((prevCategory) =>
-      prevCategory.filter((category) => category.category_id !== category_id)
-      );
+      prevCategory.filter((category) => category.id !== id)
+      )
 
       setDel((prev) => prev.filter((_, i) => i !== index));
     } catch (error) {
@@ -173,16 +165,16 @@ function Subscribe() {
                             <td>
                               <button
                                 onClick={
-                                  () => handleDelete(emails.category_id, index) // Calling handleDelete with the product's _id and index
+                                  () => handleDelete(emails.id, index) // Calling handleDelete with the product's _id and index
                                 }
                               >
                                 delete
                               </button>
-                              <button
+                              {/* <button
                                 onClick={() => openUpdateForm(emails.category_id)}
                               >
                                 update
-                              </button>
+                              </button> */}
                             </td>
                           </tr>
                         </tbody>

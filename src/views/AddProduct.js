@@ -207,7 +207,7 @@ const[fullColorData,setFullColorData]=useState([])
           old_price,
           category_id,
           // colors: selectedColors, // Pass the array of selected color IDs
-          model_id,
+          // model_id,
           details,
           screen,
           battery,
@@ -266,6 +266,8 @@ const[fullColorData,setFullColorData]=useState([])
       console.log(`Error fetching color images: ${error}`);
     }
   };
+
+  
   const handleUpload = async () => {
     try {
       if (!product_id) {
