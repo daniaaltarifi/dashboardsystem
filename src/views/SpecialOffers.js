@@ -67,8 +67,8 @@ function SpecialOffers() {
   
 
     try {
-      // ... other data
-      const response = await axios.post(
+console.log("hello")      
+const response = await axios.post(
         "http://localhost:1010/specialoffers/add",
         {
           product_id,

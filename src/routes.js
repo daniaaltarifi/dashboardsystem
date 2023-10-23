@@ -21,6 +21,7 @@ import Colors from 'views/Colors'
 import JoinTeam from 'views/JoinTeam'
 import TradeIn from "views/TradeIn"
 import Subscribe from "views/Subscribe";
+import Test from "views/Test";
 var routes = [
   {
     path: "/dashboard",
@@ -146,6 +147,13 @@ var routes = [
     name: "Subscribe",
     icon: "nc-icon nc-diamond",
     component: <Subscribe/>,
+    layout: "/admin",
+  },
+  {
+    path: "/image",
+    name: "Image",
+    icon: "nc-icon nc-diamond",
+    component: <Test/>,
     layout: "/admin",
   },
   // {
